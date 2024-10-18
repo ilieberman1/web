@@ -1,0 +1,101 @@
+/* styles.css */
+
+/* General styles */
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: linear-gradient(45deg, #ff6b6b, #6bff6b, #6b6bff, #ff6bff);
+    background-size: 400% 400%;
+    animation: gradientAnimation 10s ease infinite;
+    transition: background-color 2s ease;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.description {
+    text-align: center;
+    margin-bottom: 150px; /* Moves the text upwards */
+    color: white;
+}
+
+h1 {
+    color: white;
+    font-size: 36px; /* Larger text */
+}
+
+/* Background animation */
+@keyframes gradientAnimation {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+/* Button styles */
+.trigger-button {
+    display: inline-block;
+    padding: 15px 30px;
+    font-size: 20px;
+    background-color: #444;
+    color: white;
+    border: none;
+    cursor: pointer;
+    text-align: center;
+    transition: background-color 0.3s ease;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.trigger-button:hover {
+    background-color: #666;
+}
+
+/* Hidden checkbox for triggering the effect */
+.trigger-checkbox {
+    display: none;
+}
+
+/* When the checkbox is checked, background turns red after a delay */
+.trigger-checkbox:checked ~ body {
+    animation: none;
+    background-color: red;
+    transition: background-color 1s ease;
+}
+
+/* Hide the button once the checkbox is checked */
+.trigger-checkbox:checked + .trigger-button {
+    display: none; /* Button disappears when clicked */
+}
+
+/* Initially hide the video */
+.video-container {
+    display: none;
+    text-align: center;
+    margin-top: 50px;
+}
+
+/* Show the video once the checkbox is checked */
+.trigger-checkbox:checked ~ .video-container {
+    display: block;
+    animation: fadeIn 2s ease;
+}
+
+/* Fade-in effect for the video */
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
