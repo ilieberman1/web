@@ -2,24 +2,35 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dynamic and Static Website</title>
+    <title>Ninja Fan Page</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="description">
-        <h1>I love Ninja!</h1> <!-- Updated text -->
+        <h1>I love Ninja!</h1>
+        <p>
+            <img src="download-2.jpg" alt="Ninja" class="ninja-image">
+            Tyler "Ninja" Blevins is one of the most popular and influential gamers in the world. 
+            Rising to fame through his Fortnite streams, Ninja has become a household name in the 
+            gaming community. Known for his vibrant blue hair, exceptional gaming skills, and 
+            entertaining personality, Ninja has amassed millions of followers across various 
+            streaming platforms. He's not just a gamer, but also an author, entrepreneur, and 
+            philanthropist. Ninja's impact on gaming culture is undeniable, inspiring countless 
+            aspiring gamers and helping to bring esports into the mainstream.
+        </p>
     </div>
 
-    <!-- Hidden checkbox to trigger the effect -->
-    <input type="checkbox" id="trigger" class="trigger-checkbox">
-
-    <!-- Label acts like a button and is centered on the screen -->
-    <label for="trigger" class="trigger-button">Play Ninja</label> <!-- Updated button text -->
-
-    <!-- Embed the updated YouTube video link -->
-    <div class="video-container">
-        <iframe id="ninja-video" width="560" height="315" src="https://www.youtube.com/embed/oTh0BatQlRE" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    <div class="buttons">
+        <button id="play-video">Play Ninja</button>
+        <button id="play-game">Play Ninja Game</button>
     </div>
+
+    <div class="video-container" id="video-container">
+        <iframe id="ninja-video" width="560" height="315" frameborder="0" allowfullscreen></iframe>
+    </div>
+
+    <canvas id="game-canvas" width="800" height="400"></canvas>
+
+    <script src="script.js"></script>
 </body>
 </html>
