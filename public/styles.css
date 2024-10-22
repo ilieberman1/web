@@ -68,7 +68,26 @@ body {
     display: none;
     border: 2px solid #fff;
     background-color: #000;
-    margin: 0 auto;
+    margin: 0 auto 20px auto;
+}
+
+.leaderboard {
+    background-color: rgba(0, 0, 0, 0.8);
+    color: #fff;
+    padding: 20px;
+    margin: 20px auto;
+    width: 300px;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.leaderboard h2 {
+    margin-top: 0;
+}
+
+.leaderboard ol {
+    padding-left: 20px;
+    text-align: left;
 }
 
 @keyframes gradientAnimation {

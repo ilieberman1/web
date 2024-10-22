@@ -55,6 +55,17 @@ document.addEventListener('DOMContentLoaded', function() {
         startGame();
     });
 
+    // Clear leaderboard button (if added)
+    const clearLeaderboardButton = document.getElementById('clear-leaderboard');
+    if (clearLeaderboardButton) {
+        clearLeaderboardButton.addEventListener('click', function() {
+            clearLeaderboard();
+        });
+    }
+
+    // Display leaderboard on page load
+    displayLeaderboard();
+
     function startGame() {
         obstacles = [];
         isGameOver = false;
@@ -147,7 +158,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 obstacle.y + obstacle.height > groundY
             ) {
                 isGameOver = true;
-                alert('Game Over! Your score: ' + score);
+                let playerName = prompt('Game Over! Your score: ' + score + '\nEnter your name (or leave blank to remain anonymous):');
+                if (!playerName) {
+                    playerName = 'Unknown';
+                }
+                saveScore(playerName, score);
+                displayLeaderboard();
                 gameCanvas.style.display = 'none';
                 return;
             }
@@ -183,5 +199,39 @@ document.addEventListener('DOMContentLoaded', function() {
         canvas.fillStyle = '#fff';
         canvas.font = '24px Arial';
         canvas.fillText('Score: ' + score, 10, 30);
+    }
+
+    // Save score to localStorage
+    function saveScore(name, score) {
+        let leaderboard = JSON.parse(localStorage.getItem('leaderboard')) || [];
+        leaderboard.push({ name: name, score: score });
+        leaderboard.sort((a, b) => b.score - a.score);
+        leaderboard = leaderboard.slice(0, 10);
+        localStorage.setItem('leaderboard', JSON.stringify(leaderboard));
+    }
+
+    // Display leaderboard
+    function displayLeaderboard() {
+        let leaderboard = JSON.parse(localStorage.getItem('leaderboard')) || [];
+        let leaderboardHTML = '<h2>Leaderboard</h2><ol>';
+        leaderboard.forEach(entry => {
+            leaderboardHTML += `<li>${entry.name}: ${entry.score}</li>`;
+        });
+        leaderboardHTML += '</ol>';
+
+        let leaderboardDiv = document.getElementById('leaderboard');
+        if (!leaderboardDiv) {
+            leaderboardDiv = document.createElement('div');
+            leaderboardDiv.id = 'leaderboard';
+            leaderboardDiv.classList.add('leaderboard');
+            document.body.appendChild(leaderboardDiv);
+        }
+        leaderboardDiv.innerHTML = leaderboardHTML;
+    }
+
+    // Clear leaderboard (optional)
+    function clearLeaderboard() {
+        localStorage.removeItem('leaderboard');
+        displayLeaderboard();
     }
 });
