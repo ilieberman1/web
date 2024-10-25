@@ -31,14 +31,28 @@
 
     <canvas id="game-canvas" width="800" height="400"></canvas>
 
-    <!-- Leaderboard placeholder -->
-    <div id="leaderboard" class="leaderboard"></div>
-
-    <!-- Optional Clear Leaderboard Button -->
+    <!-- Leaderboard Buttons -->
     <div class="buttons">
-        <button id="clear-leaderboard">Clear Leaderboard</button>
+        <button id="show-local-leaderboard">Show Local Leaderboard</button>
+        <button id="show-global-leaderboard">Show Global Leaderboard</button>
     </div>
 
+    <!-- Leaderboard Placeholder -->
+    <div id="leaderboard" class="leaderboard" style="display: none;"></div>
+
+    <!-- Clear Local Leaderboard Button -->
+    <div class="buttons">
+        <button id="clear-leaderboard" style="display: none;">Clear Local Leaderboard</button>
+    </div>
+
+    <!-- Include Firebase SDK scripts -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+    <!-- Include your Firebase initialization script -->
+    <script src="database.js"></script>
+
+    <!-- Include your main script -->
     <script src="script.js"></script>
 </body>
 </html>

@@ -8,7 +8,10 @@ document.addEventListener('DOMContentLoaded', function() {
     const gameCanvas = document.getElementById('game-canvas');
     const canvas = gameCanvas.getContext('2d');
 
-    // List of Ninja's video IDs (ensure these are valid)
+    const leaderboardDiv = document.getElementById('leaderboard');
+    const clearLeaderboardButton = document.getElementById('clear-leaderboard');
+
+    // List of Ninja's video IDs
     const videoIds = ['ryNMM5pMPr0', 'RbyD5SdzlTk', 'oTh0BatQlRE'];
 
     // Load images
@@ -19,26 +22,27 @@ document.addEventListener('DOMContentLoaded', function() {
     obstacleImage.src = 'download.webp'; // Update with correct path
 
     // Image dimensions
-    const carWidth = 50; // Set to your car image width
-    const carHeight = 100; // Set to your car image height
+    const carWidth = 50;
+    const carHeight = 100;
 
-    const initialObstacleWidth = 50; // Initial obstacle width
-    const initialObstacleHeight = 50; // Initial obstacle height
+    const obstacleWidth = 50; // Fixed obstacle width
+    const obstacleHeight = 50; // Fixed obstacle height
 
     // Game variables
     let carX = gameCanvas.width / 2 - carWidth / 2;
     let obstacles = [];
-    let obstacleSpeed = 5; // Initial obstacle speed
+    let obstacleSpeed = 5;
     let groundY = gameCanvas.height - carHeight - 10;
     let isGameOver = false;
-    let score = 0; // Initialize score
+    let score = 0;
 
     // Difficulty variables
-    let gameTime = 0; // Time elapsed since game start
-    let difficultyInterval = 5000; // Increase difficulty every 5 seconds
+    let gameTime = 0;
+    let difficultyInterval = 5000;
     let lastDifficultyIncrease = 0;
-    let maxObstacleSpeed = 15; // Maximum obstacle speed
-    let maxObstacleSize = 100; // Maximum obstacle size
+    let maxObstacleSpeed = 15;
+    // Scoring variables
+    let pointsPerObstacle = 1; // Initial points per obstacle
 
     // Event listeners
     playVideoButton.addEventListener('click', function() {
@@ -47,6 +51,10 @@ document.addEventListener('DOMContentLoaded', function() {
         ninjaVideo.src = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
         videoContainer.style.display = 'block';
         gameCanvas.style.display = 'none';
+
+        // Hide leaderboard and clear button
+        leaderboardDiv.style.display = 'none';
+        clearLeaderboardButton.style.display = 'none';
     });
 
     playGameButton.addEventListener('click', function() {
@@ -55,29 +63,34 @@ document.addEventListener('DOMContentLoaded', function() {
         startGame();
     });
 
-    // Clear leaderboard button (if added)
-    const clearLeaderboardButton = document.getElementById('clear-leaderboard');
+    document.getElementById('show-local-leaderboard').addEventListener('click', function() {
+        displayLeaderboard('local');
+    });
+
+    document.getElementById('show-global-leaderboard').addEventListener('click', function() {
+        displayLeaderboard('global');
+    });
+
     if (clearLeaderboardButton) {
         clearLeaderboardButton.addEventListener('click', function() {
             clearLeaderboard();
         });
     }
 
-    // Display leaderboard on page load
-    displayLeaderboard();
-
     function startGame() {
         obstacles = [];
         isGameOver = false;
         carX = gameCanvas.width / 2 - carWidth / 2;
-        score = 0; // Reset score
-        obstacleSpeed = 5; // Reset obstacle speed
-        obstacleWidth = initialObstacleWidth; // Reset obstacle size
-        obstacleHeight = initialObstacleHeight;
-        gameTime = 0; // Reset game time
-        lastDifficultyIncrease = 0; // Reset difficulty timer
+        score = 0;
+        obstacleSpeed = 5;
+        gameTime = 0;
+        lastDifficultyIncrease = 0;
+        pointsPerObstacle = 1; // Reset points per obstacle
 
-        // Ensure images are loaded before starting the game
+        // Hide leaderboard and clear button
+        leaderboardDiv.style.display = 'none';
+        clearLeaderboardButton.style.display = 'none';
+
         if (carImage.complete && obstacleImage.complete) {
             gameLoop();
         } else {
@@ -92,9 +105,8 @@ document.addEventListener('DOMContentLoaded', function() {
     gameCanvas.addEventListener('mousemove', function(event) {
         const rect = gameCanvas.getBoundingClientRect();
         const mouseX = event.clientX - rect.left;
-        carX = mouseX - carWidth / 2; // Adjust for car width
+        carX = mouseX - carWidth / 2;
 
-        // Keep the car within canvas boundaries
         if (carX < 0) carX = 0;
         if (carX + carWidth > gameCanvas.width) carX = gameCanvas.width - carWidth;
     });
@@ -121,16 +133,12 @@ document.addEventListener('DOMContentLoaded', function() {
         if (gameTime - lastDifficultyIncrease >= difficultyInterval) {
             lastDifficultyIncrease = gameTime;
 
-            // Increase obstacle speed
             if (obstacleSpeed < maxObstacleSpeed) {
-                obstacleSpeed += 0.5; // Increment speed
+                obstacleSpeed += 0.5;
             }
 
-            // Increase obstacle size
-            if (obstacleWidth < maxObstacleSize && obstacleHeight < maxObstacleSize) {
-                obstacleWidth += 5;
-                obstacleHeight += 5;
-            }
+            // Increase points per obstacle
+            pointsPerObstacle += 1; // Increase points awarded per obstacle
         }
 
         // Create new obstacles
@@ -148,7 +156,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Update obstacles
         for (let i = 0; i < obstacles.length; i++) {
             const obstacle = obstacles[i];
-            obstacle.y += obstacleSpeed * (deltaTime / 16); // Adjust movement based on deltaTime
+            obstacle.y += obstacleSpeed * (deltaTime / 16);
 
             // Check for collision
             if (
@@ -163,14 +171,13 @@ document.addEventListener('DOMContentLoaded', function() {
                     playerName = 'Unknown';
                 }
                 saveScore(playerName, score);
-                displayLeaderboard();
                 gameCanvas.style.display = 'none';
                 return;
             }
 
             // Check if obstacle has passed the car
             if (!obstacle.passed && obstacle.y > groundY + carHeight) {
-                score++;
+                score += pointsPerObstacle; // Increase score by pointsPerObstacle
                 obstacle.passed = true;
             }
         }
@@ -178,10 +185,6 @@ document.addEventListener('DOMContentLoaded', function() {
         // Remove off-screen obstacles
         obstacles = obstacles.filter(obstacle => obstacle.y < gameCanvas.height);
     }
-
-    // Initial obstacle size
-    let obstacleWidth = initialObstacleWidth;
-    let obstacleHeight = initialObstacleHeight;
 
     function drawGame() {
         // Clear canvas
@@ -201,8 +204,12 @@ document.addEventListener('DOMContentLoaded', function() {
         canvas.fillText('Score: ' + score, 10, 30);
     }
 
-    // Save score to localStorage
     function saveScore(name, score) {
+        saveLocalScore(name, score);
+        saveGlobalScore(name, score);
+    }
+
+    function saveLocalScore(name, score) {
         let leaderboard = JSON.parse(localStorage.getItem('leaderboard')) || [];
         leaderboard.push({ name: name, score: score });
         leaderboard.sort((a, b) => b.score - a.score);
@@ -210,28 +217,61 @@ document.addEventListener('DOMContentLoaded', function() {
         localStorage.setItem('leaderboard', JSON.stringify(leaderboard));
     }
 
-    // Display leaderboard
-    function displayLeaderboard() {
-        let leaderboard = JSON.parse(localStorage.getItem('leaderboard')) || [];
-        let leaderboardHTML = '<h2>Leaderboard</h2><ol>';
-        leaderboard.forEach(entry => {
-            leaderboardHTML += `<li>${entry.name}: ${entry.score}</li>`;
+    function saveGlobalScore(name, score) {
+        db.collection('leaderboard').add({
+            name: name,
+            score: score
+        })
+        .then(() => {
+            console.log('Score saved to Firestore');
+        })
+        .catch(error => {
+            console.error('Error saving score: ', error);
         });
-        leaderboardHTML += '</ol>';
-
-        let leaderboardDiv = document.getElementById('leaderboard');
-        if (!leaderboardDiv) {
-            leaderboardDiv = document.createElement('div');
-            leaderboardDiv.id = 'leaderboard';
-            leaderboardDiv.classList.add('leaderboard');
-            document.body.appendChild(leaderboardDiv);
-        }
-        leaderboardDiv.innerHTML = leaderboardHTML;
     }
 
-    // Clear leaderboard (optional)
+    function displayLeaderboard(type) {
+        // Hide the leaderboard and clear button before displaying
+        leaderboardDiv.style.display = 'none';
+        clearLeaderboardButton.style.display = 'none';
+
+        if (type === 'local') {
+            let leaderboard = JSON.parse(localStorage.getItem('leaderboard')) || [];
+            let leaderboardHTML = '<h2>Local Leaderboard</h2><ol>';
+            leaderboard.forEach(entry => {
+                leaderboardHTML += `<li>${entry.name}: ${entry.score}</li>`;
+            });
+            leaderboardHTML += '</ol>';
+
+            leaderboardDiv.innerHTML = leaderboardHTML;
+            leaderboardDiv.style.display = 'block';
+
+            // Show clear leaderboard button
+            clearLeaderboardButton.style.display = 'block';
+        } else if (type === 'global') {
+            db.collection('leaderboard').orderBy('score', 'desc').limit(10).get()
+            .then(querySnapshot => {
+                let leaderboardHTML = '<h2>Global Leaderboard</h2><ol>';
+                querySnapshot.forEach(doc => {
+                    const data = doc.data();
+                    leaderboardHTML += `<li>${data.name}: ${data.score}</li>`;
+                });
+                leaderboardHTML += '</ol>';
+
+                leaderboardDiv.innerHTML = leaderboardHTML;
+                leaderboardDiv.style.display = 'block';
+
+                // Hide clear leaderboard button for global leaderboard
+                clearLeaderboardButton.style.display = 'none';
+            })
+            .catch(error => {
+                console.error('Error retrieving leaderboard: ', error);
+            });
+        }
+    }
+
     function clearLeaderboard() {
         localStorage.removeItem('leaderboard');
-        displayLeaderboard();
+        displayLeaderboard('local');
     }
 });
